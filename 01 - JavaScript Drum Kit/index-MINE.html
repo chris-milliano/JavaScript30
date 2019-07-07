@@ -97,27 +97,27 @@
     
     return audioElems;
   }
-  
-  function handleKeyDown (event) {
-    console.log('handleKeyDown()', event.keyCode);
 
+  function handleKeyPress (event, pressType) {
     if (SOUND_KEYS.includes(`${event.keyCode}`)) {
-      soundKeyElems[`${event.keyCode}`].classList.add('playing');
-      soundAudioElems[`${event.keyCode}`].play();
-    }
-  }
-
-  function handleKeyUp (event) {
-    console.log('handleKeyUp()', event.keyCode);
-
-    if (SOUND_KEYS.includes(`${event.keyCode}`)) {
-      soundKeyElems[`${event.keyCode}`].classList.remove('playing');
+      if (pressType === 'keydown') {
+        soundKeyElems[`${event.keyCode}`].classList.add('playing');
+        soundAudioElems[`${event.keyCode}`].play();
+      } else if (pressType === 'keyup') {
+        soundKeyElems[`${event.keyCode}`].classList.remove('playing');
+      } else {
+        console.error('Unexpected pressType triggered', pressType);
+      }
     }
   }
 
   (() => {
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
+    document.addEventListener('keydown', (event) => {
+      handleKeyPress(event, 'keydown')
+    });
+    document.addEventListener('keyup', (event) => {
+      handleKeyPress(event, 'keyup')
+    });
 
     soundKeyElems = getSoundKeyElems(document.querySelectorAll('.key'));
     soundAudioElems = getSoundAudioElems(document.querySelectorAll('[data-key]'));
