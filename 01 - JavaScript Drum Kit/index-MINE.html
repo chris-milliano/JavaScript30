@@ -72,8 +72,9 @@
   ];
 
   let soundKeyElems = {};
+  let soundAudioElems = {};
 
-  function getSoundElems (elems) {
+  function getSoundKeyElems (elems) {
     let elemsWithKey = {};
     for (const elem in elems) {
       const thisElem = elems[elem];
@@ -84,12 +85,25 @@
     
     return elemsWithKey;
   }
+
+  function getSoundAudioElems (elems) {
+    let audioElems = {};
+    for (const elem in elems) {
+      const thisElem = elems[elem];
+      if (thisElem.nodeName === 'AUDIO') {
+        audioElems[`${thisElem.dataset.key}`] = thisElem;
+      }
+    }
+    
+    return audioElems;
+  }
   
   function handleKeyDown (event) {
     console.log('handleKeyDown()', event.keyCode);
 
     if (SOUND_KEYS.includes(`${event.keyCode}`)) {
       soundKeyElems[`${event.keyCode}`].classList.add('playing');
+      soundAudioElems[`${event.keyCode}`].play();
     }
   }
 
@@ -105,8 +119,9 @@
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
 
-    soundKeyElems = getSoundElems(document.querySelectorAll('.key'));
-    console.log('at setup', soundKeyElems);
+    soundKeyElems = getSoundKeyElems(document.querySelectorAll('.key'));
+    soundAudioElems = getSoundAudioElems(document.querySelectorAll('[data-key]'));
+    console.log('at setup', soundKeyElems, soundAudioElems);
   })();
 
 </script>
