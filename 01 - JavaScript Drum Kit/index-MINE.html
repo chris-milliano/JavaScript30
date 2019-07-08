@@ -59,22 +59,11 @@
 
 <script>
 
-  const SOUND_KEYS = [
-    '65',
-    '83',
-    '68',
-    '70',
-    '71',
-    '72',
-    '74',
-    '75',
-    '76'
-  ];
-
+  let keysWithAudio = [];
   let soundElems = {};
 
-  function getSoundElems (elems) {
-    let soundElems = {
+  function getSoundElems(elems) {
+    let innerSoundElems = {
       audio: {},
       div: {}
     };
@@ -83,20 +72,42 @@
       const thisElem = elems[elem];
       if (thisElem.nodeName) {
         if (thisElem.nodeName === 'AUDIO') {
-          soundElems.audio[`${thisElem.dataset.key}`] = thisElem;
+          innerSoundElems.audio[`${thisElem.dataset.key}`] = thisElem;
         } else if (thisElem.nodeName === 'DIV') {
-          soundElems.div[`${thisElem.dataset.key}`] = thisElem;
+          innerSoundElems.div[`${thisElem.dataset.key}`] = thisElem;
         } else {
           console.error('Unexpected element labeled with data-key', thisElem);
         }
       }
     }
     
-    return soundElems;
+    return innerSoundElems;
   }
 
-  function handleKeyPress (event, pressType) {
-    if (SOUND_KEYS.includes(`${event.keyCode}`)) {
+  function areIdenticalArrays(arr1, arr2) {
+    const intersection = arr1.filter( (elem) => {
+      return arr2.includes(elem);
+    });
+
+    return intersection.length === arr1.length;
+  }
+
+  function getKeysWithAudio(soundElemsToCheck) {
+    const audioArr = Object.keys(soundElemsToCheck.audio);
+    const divArr = Object.keys(soundElemsToCheck.div);
+
+    const arraysAreIdentical = areIdenticalArrays(audioArr, divArr);
+
+    if (!arraysAreIdentical) {
+      console.error('Unmatched number audio vs key tags', audioArr, divArr);
+      return [];
+    }
+
+    return audioArr;
+  }
+
+  function handleKeyPress(event, pressType) {
+    if (keysWithAudio.includes(`${event.keyCode}`)) {
       if (pressType === 'keydown') {
         soundElems.div[`${event.keyCode}`].classList.add('playing');
         soundElems.audio[`${event.keyCode}`].play();
@@ -117,7 +128,8 @@
     });
 
     soundElems = { ...getSoundElems(document.querySelectorAll('[data-key]')) };
-    console.log('at setup', soundElems);
+
+    keysWithAudio = [ ...getKeysWithAudio(soundElems) ];
   })();
 
 </script>
