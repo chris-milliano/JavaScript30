@@ -85,34 +85,38 @@
     };
 
     function updateClockDisplay (timeObj) {
-      display.hands.secs.style.transform = 'rotate(0deg)';
-    };
 
+      const hoursDeg = timeObj.hours * 360 / 12 + 90;
+      const minsDeg = timeObj.mins * 360 / 60 + 90;
+      const secsDeg = timeObj.secs * 360 / 60 + 90;
+
+      display.hands.hours.style.transform = `rotate(${hoursDeg}deg)`;
+      display.hands.mins.style.transform = `rotate(${minsDeg}deg)`;
+      display.hands.secs.style.transform = `rotate(${secsDeg}deg)`;
+    };
 
     function secondTimer () {
       let date = new Date();
       curTime = {
-        hours: date.getHours(),
+        hours: date.getHours() % 12,
         mins: date.getMinutes(),
         secs: date.getSeconds()
       };
 
-      console.log('curTime', curTime);
+      updateClockDisplay (curTime);
     };
     
-
     (() => {
-      // setInterval(secondTimer, 1000);
-
       display = {
         hands: {
+          hours: document.querySelector('.hour-hand'),
+          mins: document.querySelector('.min-hand'),
           secs: document.querySelector('.second-hand')
         }
       };
 
-      updateClockDisplay();
+      setInterval(secondTimer, 1000);
     })();
-
 
   </script>
 
