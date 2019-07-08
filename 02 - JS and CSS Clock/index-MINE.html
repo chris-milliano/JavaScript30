@@ -72,50 +72,56 @@
 
   <script>
 
+    const REGULATE_12_HOUR_CLOCK = 12;
+    const ROTATE_CSS_START_POSITION = 90;
+    const DEGREES_IN_CIRCLE = 360;
+    const HOURS_ON_CLOCK = 12;
+    const MINS_ON_CLOCK = 60;
+    const SECS_ON_CLOCK = 60;
+
     let curTime = {
       hours: 0,
       mins: 0,
       secs: 0
     };
 
-    let display = {
-      hands: {
-        secs: null
-      }
+    let displayElems = {
+      hours: null,
+      mins: null,
+      secs: null
     };
 
     function updateClockDisplay (timeObj) {
 
-      const hoursDeg = timeObj.hours * 360 / 12 + 90;
-      const minsDeg = timeObj.mins * 360 / 60 + 90;
-      const secsDeg = timeObj.secs * 360 / 60 + 90;
+      const hoursDeg = timeObj.hours * DEGREES_IN_CIRCLE / HOURS_ON_CLOCK + ROTATE_CSS_START_POSITION;
+      const minsDeg = timeObj.mins * DEGREES_IN_CIRCLE / MINS_ON_CLOCK + ROTATE_CSS_START_POSITION;
+      const secsDeg = timeObj.secs * DEGREES_IN_CIRCLE / SECS_ON_CLOCK + ROTATE_CSS_START_POSITION;
 
-      display.hands.hours.style.transform = `rotate(${hoursDeg}deg)`;
-      display.hands.mins.style.transform = `rotate(${minsDeg}deg)`;
-      display.hands.secs.style.transform = `rotate(${secsDeg}deg)`;
+      displayElems.hours.style.transform = `rotate(${hoursDeg}deg)`;
+      displayElems.mins.style.transform = `rotate(${minsDeg}deg)`;
+      displayElems.secs.style.transform = `rotate(${secsDeg}deg)`;
     };
 
     function secondTimer () {
       let date = new Date();
       curTime = {
-        hours: date.getHours() % 12,
+        hours: date.getHours() % REGULATE_12_HOUR_CLOCK,
         mins: date.getMinutes(),
         secs: date.getSeconds()
       };
 
-      updateClockDisplay (curTime);
+      updateClockDisplay(curTime);
     };
     
     (() => {
-      display = {
-        hands: {
-          hours: document.querySelector('.hour-hand'),
-          mins: document.querySelector('.min-hand'),
-          secs: document.querySelector('.second-hand')
-        }
+      displayElems = {
+        hours: document.querySelector('.hour-hand'),
+        mins: document.querySelector('.min-hand'),
+        secs: document.querySelector('.second-hand')
       };
 
       setInterval(secondTimer, 1000);
+      secondTimer();
     })();
 
   </script>
