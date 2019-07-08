@@ -71,40 +71,37 @@
     '76'
   ];
 
-  let soundKeyElems = {};
-  let soundAudioElems = {};
+  let soundElems = {};
 
-  function getSoundKeyElems (elems) {
-    let elemsWithKey = {};
+  function getSoundElems (elems) {
+    let soundElems = {
+      audio: {},
+      div: {}
+    };
+
     for (const elem in elems) {
       const thisElem = elems[elem];
-      if (thisElem.dataset) {
-        elemsWithKey[`${thisElem.dataset.key}`] = thisElem;
+      if (thisElem.nodeName) {
+        if (thisElem.nodeName === 'AUDIO') {
+          soundElems.audio[`${thisElem.dataset.key}`] = thisElem;
+        } else if (thisElem.nodeName === 'DIV') {
+          soundElems.div[`${thisElem.dataset.key}`] = thisElem;
+        } else {
+          console.error('Unexpected element labeled with data-key', thisElem);
+        }
       }
     }
     
-    return elemsWithKey;
-  }
-
-  function getSoundAudioElems (elems) {
-    let audioElems = {};
-    for (const elem in elems) {
-      const thisElem = elems[elem];
-      if (thisElem.nodeName === 'AUDIO') {
-        audioElems[`${thisElem.dataset.key}`] = thisElem;
-      }
-    }
-    
-    return audioElems;
+    return soundElems;
   }
 
   function handleKeyPress (event, pressType) {
     if (SOUND_KEYS.includes(`${event.keyCode}`)) {
       if (pressType === 'keydown') {
-        soundKeyElems[`${event.keyCode}`].classList.add('playing');
-        soundAudioElems[`${event.keyCode}`].play();
+        soundElems.div[`${event.keyCode}`].classList.add('playing');
+        soundElems.audio[`${event.keyCode}`].play();
       } else if (pressType === 'keyup') {
-        soundKeyElems[`${event.keyCode}`].classList.remove('playing');
+        soundElems.div[`${event.keyCode}`].classList.remove('playing');
       } else {
         console.error('Unexpected pressType triggered', pressType);
       }
@@ -119,9 +116,8 @@
       handleKeyPress(event, 'keyup')
     });
 
-    soundKeyElems = getSoundKeyElems(document.querySelectorAll('.key'));
-    soundAudioElems = getSoundAudioElems(document.querySelectorAll('[data-key]'));
-    console.log('at setup', soundKeyElems, soundAudioElems);
+    soundElems = { ...getSoundElems(document.querySelectorAll('[data-key]')) };
+    console.log('at setup', soundElems);
   })();
 
 </script>
